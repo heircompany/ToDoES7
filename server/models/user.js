@@ -39,15 +39,15 @@ UserSchema.methods.toJSON = function () {
   var user = this;
   var userObject = user.toObject();
 
-  return _.pick(userObject, ['_id', 'email']);
+  return _.pick(userObject, [ '_id', 'email' ]);
 };
 
 UserSchema.methods.generateAuthToken = function () {
   var user = this;
   var access = 'auth';
-  var token = jwt.sign({_id: user._id.toHexString(), access}, process.env.JWT_SECRET).toString();
+  var token = jwt.sign({ _id: user._id.toHexString(), access }, process.env.JWT_SECRET).toString();
 
-  user.tokens.push({access, token});
+  user.tokens.push({ access, token });
 
   return user.save().then(() => {
     return token;
@@ -59,7 +59,7 @@ UserSchema.methods.removeToken = function (token) {
 
   return user.update({
     $pull: {
-      tokens: {token}
+      tokens: { token }
     }
   });
 };
@@ -85,7 +85,7 @@ UserSchema.statics.findByToken = function (token) {
 UserSchema.statics.findByCredentials = function (email, password) {
   var User = this;
   // find user by email
-  return User.findOne({email}).then((user) => {
+  return User.findOne({ email }).then((user) => {
     // reject request if no match
     if (!user) {
       return Promise.reject();
@@ -122,4 +122,4 @@ UserSchema.pre('save', function (next) {
 
 var User = mongoose.model('User', UserSchema);
 
-module.exports = {User}
+module.exports = { User };

@@ -1,4 +1,4 @@
-var {User} = require('./../models/user');
+var { User } = require('./../models/user');
 
 var authenticate = (req, res, next) => {
   //fetch custom header for JWT
@@ -17,4 +17,4 @@ var authenticate = (req, res, next) => {
   });
 };
 
-module.exports = {authenticate};
+module.exports = { authenticate };
