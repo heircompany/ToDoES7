@@ -70,6 +70,7 @@ describe('GET /todos', () => {
 describe('GET /todos/:id', () => {
   it('should return todo doc', (done) => {
     request(app)
+    //convert object  to string
       .get(`/todos/${todos[0]._id.toHexString()}`)
       .set('x-auth', users[0].tokens[0].token)
       .expect(200)
@@ -81,6 +82,7 @@ describe('GET /todos/:id', () => {
 
   it('should not return todo doc created by other user', (done) => {
     request(app)
+    //convert object  to string
       .get(`/todos/${todos[1]._id.toHexString()}`)
       .set('x-auth', users[0].tokens[0].token)
       .expect(404)
@@ -88,6 +90,7 @@ describe('GET /todos/:id', () => {
   });
 
   it('should return 404 if todo not found', (done) => {
+    //create new hex id aka string from object id
     var hexId = new ObjectID().toHexString();
 
     request(app)
@@ -169,9 +172,10 @@ describe('DELETE /todos/:id', () => {
 
 describe('PATCH /todos/:id', () => {
   it('should update the todo', (done) => {
+    //grab todo id
     var hexId = todos[0]._id.toHexString();
     var text = 'This should be the new text';
-
+    //update text, set completed to true
     request(app)
       .patch(`/todos/${hexId}`)
       .set('x-auth', users[0].tokens[0].token)
@@ -180,6 +184,7 @@ describe('PATCH /todos/:id', () => {
         text
       })
       .expect(200)
+      //text updated, completed true, completedAt is number
       .expect((res) => {
         expect(res.body.todo.text).toBe(text);
         expect(res.body.todo.completed).toBe(true);
@@ -189,9 +194,10 @@ describe('PATCH /todos/:id', () => {
   });
 
   it('should not update the todo created by other user', (done) => {
+    //grab todo id
     var hexId = todos[0]._id.toHexString();
     var text = 'This should be the new text';
-
+    //update text, set completed to true
     request(app)
       .patch(`/todos/${hexId}`)
       .set('x-auth', users[1].tokens[0].token)
@@ -204,9 +210,10 @@ describe('PATCH /todos/:id', () => {
   });
 
   it('should clear completedAt when todo is not completed', (done) => {
+    //grab todo id
     var hexId = todos[1]._id.toHexString();
     var text = 'This should be the new text!!';
-
+    //update text, set completed to false
     request(app)
       .patch(`/todos/${hexId}`)
       .set('x-auth', users[1].tokens[0].token)
@@ -215,6 +222,7 @@ describe('PATCH /todos/:id', () => {
         text
       })
       .expect(200)
+      //text updated, completed false, completedAt is null
       .expect((res) => {
         expect(res.body.todo.text).toBe(text);
         expect(res.body.todo.completed).toBe(false);
@@ -228,10 +236,13 @@ describe('GET /users/me', () => {
   it('should return user if authenticated', (done) => {
     request(app)
       .get('/users/me')
+      // get custom header, grab first ID and first token
       .set('x-auth', users[0].tokens[0].token)
       .expect(200)
       .expect((res) => {
+        // check user id, convert to string and validate
         expect(res.body._id).toBe(users[0]._id.toHexString());
+        // check user email and validate
         expect(res.body.email).toBe(users[0].email);
       })
       .end(done);
@@ -240,8 +251,11 @@ describe('GET /users/me', () => {
   it('should return 401 if not authenticated', (done) => {
     request(app)
       .get('/users/me')
+      // get custom header, grab first ID and first token
+      // no token
       .expect(401)
       .expect((res) => {
+        // validate response is empty
         expect(res.body).toEqual({});
       })
       .end(done);

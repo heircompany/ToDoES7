@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const _ = require('lodash');
 const bcrypt = require('bcryptjs');
 
+// USER SCHEMA
 var UserSchema = new mongoose.Schema({
   email: {
     type: String,
@@ -33,6 +34,7 @@ var UserSchema = new mongoose.Schema({
   }]
 });
 
+//INSTANCE METHODS
 UserSchema.methods.toJSON = function () {
   var user = this;
   var userObject = user.toObject();
@@ -62,6 +64,7 @@ UserSchema.methods.removeToken = function (token) {
   });
 };
 
+//MODEL METHODS
 UserSchema.statics.findByToken = function (token) {
   var User = this;
   var decoded;
@@ -81,14 +84,15 @@ UserSchema.statics.findByToken = function (token) {
 
 UserSchema.statics.findByCredentials = function (email, password) {
   var User = this;
-
+  // find user by email
   return User.findOne({email}).then((user) => {
+    // reject request if no match
     if (!user) {
       return Promise.reject();
     }
 
     return new Promise((resolve, reject) => {
-      // Use bcrypt.compare to compare password and user.password
+      // compare password to hashed password for validation
       bcrypt.compare(password, user.password, (err, res) => {
         if (res) {
           resolve(user);
@@ -100,6 +104,7 @@ UserSchema.statics.findByCredentials = function (email, password) {
   });
 };
 
+//MONGOOSE MIDDLEWARE
 UserSchema.pre('save', function (next) {
   var user = this;
 

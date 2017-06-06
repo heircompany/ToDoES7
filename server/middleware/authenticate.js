@@ -1,8 +1,9 @@
 var {User} = require('./../models/user');
 
 var authenticate = (req, res, next) => {
+  //fetch custom header for JWT
   var token = req.header('x-auth');
-
+  //model methods on User - User.findByToken
   User.findByToken(token).then((user) => {
     if (!user) {
       return Promise.reject();
